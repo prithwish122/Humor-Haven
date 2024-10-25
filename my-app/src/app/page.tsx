@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import Streak from "./components/Streak";
+import { BrowserProvider, ethers } from 'ethers';
+import humorToken from "./contractInfo/humorToken.json"
+
 
 const Page: React.FC = () => {
   const bgImageUrl =
@@ -79,7 +82,7 @@ const Page: React.FC = () => {
   const [commentText, setCommentText] = useState<string>("");
 
   // Function to handle request confirmation
-  const handleConfirmRequest = () => {
+  const handleConfirmRequest = async () => {
     const newMemeRequest = {
       title,
       desc: description,
@@ -97,6 +100,20 @@ const Page: React.FC = () => {
     setDescription("");
     setExampleLink("");
     setIsModalOpen(false);
+    const claimAmt = 1;
+    const contractAddress = "0xaF91afD9420c7947ed8D5c8D14899F417eC39D7b"
+    const provider = new BrowserProvider(window.ethereum);
+
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+    console.log("Wallet Address:", address);
+    const humorTokenContract = new ethers.Contract(contractAddress, humorToken.abi, signer)
+    // mint();
+    console.log(claimAmt, "========inside withdraw===")
+
+    await (await humorTokenContract.donate(address,"0x94A7Af5edB47c3B91d1B4Ffc2CA535d7aDA8CEDe" ,ethers.parseUnits(claimAmt.toString(), 18))).wait();
+    alert("Meme Request Posted!!")
+
   };
 
   // Function to handle contribute button click
@@ -106,10 +123,23 @@ const Page: React.FC = () => {
   };
 
   // Function to confirm contribution
-  const handleConfirmContribution = () => {
+  const handleConfirmContribution = async () => {
     if (contributionLink) {
       const newSubmission = { link: contributionLink, upvotes: 0, downvotes: 0, comments: [] };
       setSubmissions((prev) => [...prev, newSubmission]);
+      const claimAmt = 5;
+      const contractAddress = "0xaF91afD9420c7947ed8D5c8D14899F417eC39D7b"
+      const provider = new BrowserProvider(window.ethereum);
+  
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      console.log("Wallet Address:", address);
+      const humorTokenContract = new ethers.Contract(contractAddress, humorToken.abi, signer)
+      // mint();
+      console.log(claimAmt, "========inside withdraw===")
+  
+      await (await humorTokenContract.mint(address, ethers.parseUnits(claimAmt.toString(), 18))).wait();
+  
       setConfirmationMessage(`You received 5 HH for contributing to "${contributeMemeTitle}"!`);
       setContributionLink(""); // Clear the input field
       setContributeModalOpen(false);
@@ -224,10 +254,11 @@ const Page: React.FC = () => {
               <button
                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition duration-200"
                 onClick={() => setIsModalOpen(false)} // Close the modal
-              >
+                >
                 Cancel
               </button>
             </div>
+                <p className="mt-6 ml-4 text-red-400">*1 HH cost will be deducted</p>
           </div>
         </div>
       )}

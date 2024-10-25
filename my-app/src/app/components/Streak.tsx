@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { BrowserProvider, ethers } from 'ethers';
+import humorToken from "../contractInfo/humorToken.json"
 
 const Streak: React.FC<{ totalPY: number; setTotalPY: (amount: number) => void }> = ({
   totalPY,
@@ -8,9 +10,24 @@ const Streak: React.FC<{ totalPY: number; setTotalPY: (amount: number) => void }
   const [showPopup, setShowPopup] = useState(false); // Track if the popup/modal is shown
 
   // Function to handle the claim
-  const handleClaimClick = () => {
+  const handleClaimClick = async () => {
     setIsClaimed(true);
     setShowPopup(false);
+    const claimAmt = 10;
+    const contractAddress = "0xaF91afD9420c7947ed8D5c8D14899F417eC39D7b"
+    const provider = new BrowserProvider(window.ethereum);
+
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+    console.log("Wallet Address:", address);
+    const humorTokenContract = new ethers.Contract(contractAddress, humorToken.abi, signer)
+    // mint();
+    console.log(claimAmt, "========inside withdraw===")
+
+    await (await humorTokenContract.mint(address, ethers.parseUnits(claimAmt.toString(), 18))).wait();
+
+    alert('Withdraw your earned HH coins!');
+    alert('Prize claimed successfully!');
     setTotalPY(totalPY + 10); // Add 10PY to the totalPY
   };
 
@@ -65,9 +82,8 @@ const Streak: React.FC<{ totalPY: number; setTotalPY: (amount: number) => void }
 
       {/* Visible Claim Button */}
       <button
-        className={`mt-4 px-4 py-2 rounded-lg ${
-          isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500'
-        } text-white`}
+        className={`mt-4 px-4 py-2 rounded-lg ${isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500'
+          } text-white`}
         onClick={handleClaimClick}
         disabled={isClaimed}
       >

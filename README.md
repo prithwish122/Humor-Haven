@@ -2,11 +2,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-## Add this token as manually into your wallet
+## Add HH token as manually into your wallet
 
 Contract Address = 0xaF91afD9420c7947ed8D5c8D14899F417eC39D7b
 
-[Verify Here](https://testnet.aiascan.com/token/0xaF91afD9420c7947ed8D5c8D14899F417eC39D7b)
+[Verify HH Here](https://testnet.aiascan.com/token/0xaF91afD9420c7947ed8D5c8D14899F417eC39D7b)
 
 ---
 
